@@ -24,8 +24,8 @@ class VendorResource extends Resource
 {
     protected static ?string $model = Vendor::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-briefcase';
-
+    protected static ?string $pluralLabel = 'Vendors';
+    protected static ?string $navigationGroup = 'Venue & Vendor';
     public static function form(Form $form): Form
     {
         return $form->schema([

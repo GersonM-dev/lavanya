@@ -18,9 +18,8 @@ use Filament\Tables\Columns\TextColumn;
 class VendorCategoryResource extends Resource
 {
     protected static ?string $model = VendorCategory::class;
-
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
-
+    protected static ?string $pluralLabel = 'Kategori';
+    protected static ?string $navigationGroup = 'Venue & Vendor';
     public static function form(Form $form): Form
     {
         return $form

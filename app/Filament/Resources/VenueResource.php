@@ -24,10 +24,10 @@ class VenueResource extends Resource
 {
     protected static ?string $model = Venue::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-home-modern';
     protected static ?string $navigationLabel = 'Venues';
     protected static ?string $pluralModelLabel = 'Venues';
     protected static ?string $slug = 'venues';
+    protected static ?string $navigationGroup = 'Venue & Vendor';
 
     public static function form(Form $form): Form
     {

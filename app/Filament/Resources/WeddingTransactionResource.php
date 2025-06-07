@@ -36,7 +36,8 @@ class WeddingTransactionResource extends Resource
                         'Outdoor' => 'Outdoor',
                     ])
                     ->reactive()
-                    ->required(),
+                    ->required()
+                    ->dehydrated(false),
 
                 Forms\Components\Select::make('venue_id')
                     ->label('Venue')
@@ -59,7 +60,7 @@ class WeddingTransactionResource extends Resource
                             ->options(function ($get) {
                                 $venueId = $get('../../venue_id');
                                 return \App\Models\Vendor::when($venueId, function ($q) use ($venueId) {
-                                    $q->where('id_venue', $venueId);
+                                    $q->where('venue_id', $venueId);
                                 })->pluck('nama', 'id');
                             })
                             ->searchable()
@@ -129,24 +130,24 @@ class WeddingTransactionResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('customer.name')
+                Tables\Columns\TextColumn::make('customer.grooms_name')
                     ->label('Customer')
                     ->sortable()
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('venue.name')
+                Tables\Columns\TextColumn::make('venue.nama')
                     ->label('Venue')
                     ->sortable()
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('transaction_date')
-                    ->label('Transaction Date')
-                    ->dateTime()
+                Tables\Columns\TextColumn::make('customer.wedding_date')
+                    ->label('Wedding Date')
+                    ->date()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('total_estimated_price')
                     ->label('Total Estimated Price')
-                    ->money('usd')
+                    ->money('idr')
                     ->sortable(),
 
                 Tables\Columns\SelectColumn::make('status')
@@ -159,11 +160,6 @@ class WeddingTransactionResource extends Resource
                         'cancelled' => 'Cancelled',
                     ])
                     ->sortable(),
-
-                Tables\Columns\TextColumn::make('notes')
-                    ->label('Notes')
-                    ->limit(30)
-                    ->wrap(),
             ])
             ->filters([
                 //
