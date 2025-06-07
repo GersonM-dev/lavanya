@@ -26,17 +26,29 @@ class WeddingTransactionResource extends Resource
             ->schema([
                 Forms\Components\Select::make('customer_id')
                     ->label('Customer')
-                    ->relationship('customer', 'name')
+                    ->relationship('customer', 'grooms_name')
+                    ->required(),
+
+                Forms\Components\Select::make('venue_type')
+                    ->label('Venue Type')
+                    ->options([
+                        'Indoor' => 'Indoor',
+                        'Outdoor' => 'Outdoor',
+                    ])
+                    ->reactive()
                     ->required(),
 
                 Forms\Components\Select::make('venue_id')
                     ->label('Venue')
-                    ->relationship('venue', 'name')
-                    ->required(),
-
-                Forms\Components\DateTimePicker::make('transaction_date')
-                    ->label('Transaction Date')
-                    ->required(),
+                    ->options(function ($get) {
+                        $type = $get('venue_type');
+                        if (!$type)
+                            return [];
+                        return \App\Models\Venue::where('type', $type)->pluck('nama', 'id');
+                    })
+                    ->required()
+                    ->searchable()
+                    ->disabled(fn($get) => !$get('venue_type')),
 
                 Forms\Components\Repeater::make('vendors')
                     ->label('Vendors')
@@ -77,7 +89,18 @@ class WeddingTransactionResource extends Resource
                                 $set('../../total_estimated_price', $total);
                             }),
                     ])
+                    ->columnSpanFull()
+                    ->collapsible()
+                    ->defaultItems(2)
                     ->minItems(1)
+                    ->grid(2)
+                    ->itemLabel(function (array $state): ?string {
+                        if (isset($state['vendor_id'])) {
+                            $vendor = \App\Models\Vendor::find($state['vendor_id']);
+                            return $vendor?->nama;
+                        }
+                        return null;
+                    })
                     ->createItemButtonLabel('Add Vendor'),
 
 
@@ -88,9 +111,17 @@ class WeddingTransactionResource extends Resource
                     ->dehydrated()
                     ->required(),
 
+                Forms\Components\DateTimePicker::make('transaction_date')
+                    ->label('Transaction Date')
+                    ->required()
+                    ->disabled()
+                    ->dehydrated()
+                    ->default(now()),
+
                 Forms\Components\Textarea::make('notes')
                     ->label('Notes')
-                    ->nullable(),
+                    ->nullable()
+                    ->columnSpanFull(),
             ]);
     }
 

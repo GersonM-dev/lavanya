@@ -9,4 +9,5 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateWeddingTransaction extends CreateRecord
 {
     protected static string $resource = WeddingTransactionResource::class;
+    public static ?string $title = 'Create Wedding Plan';
 }
