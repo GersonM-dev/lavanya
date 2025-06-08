@@ -8,11 +8,16 @@ class WeddingTransaction extends Model
 {
     protected $fillable = [
         'customer_id',
+        'vendor_catering_id',
         'venue_id',
         'transaction_date',
         'total_estimated_price',
         'status',
         'notes',
+        'catering_total_price',
+        'total_buffet_price',
+        'total_gubugan_price',
+        'total_dessert_price',
     ];
 
     public function customer()
@@ -28,6 +33,11 @@ class WeddingTransaction extends Model
     public function vendors()
     {
         return $this->hasMany(WeddingTransactionVendor::class, 'transaction_id');
+    }
+
+    public function vendorCatering()
+    {
+        return $this->belongsTo(VendorCatering::class, 'vendor_catering_id');
     }
 
 }

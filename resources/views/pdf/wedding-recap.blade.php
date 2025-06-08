@@ -1,17 +1,42 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <title>Wedding Plan Recap</title>
     <style>
-        body { font-family: Arial, sans-serif; font-size: 12px; }
-        .title { font-size: 20px; font-weight: bold; margin-bottom: 20px; }
-        .section { margin-bottom: 16px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ddd; padding: 6px; }
-        th { background: #eee; }
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            margin-bottom: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 6px;
+        }
+
+        th {
+            background: #eee;
+        }
     </style>
 </head>
+
 <body>
     <div class="title">Wedding Plan Recap</div>
     <div class="section">
@@ -34,6 +59,20 @@
         Price: Rp {{ isset($venue->harga) ? number_format($venue->harga, 0, ',', '.') : '-' }}<br>
     </div>
 
+    @if($catering)
+        <div class="section">
+            <strong>Catering</strong><br>
+            Name: {{ $catering->nama ?? '-' }}<br>
+            @if($catering->type === 'Hotel' || $catering->type === 'Resto')
+                Total Buffet: IDR {{ number_format($totalBuffet, 0, ',', '.') }}<br>
+                Total Gubugan: IDR {{ number_format($totalGubugan, 0, ',', '.') }}<br>
+                Total Dessert: IDR {{ number_format($totalDessert, 0, ',', '.') }}<br>
+            @endif
+            Total Catering: <strong>IDR {{ number_format($cateringTotal, 0, ',', '.') }}</strong><br>
+        </div>
+    @endif
+
+
     <div class="section">
         <strong>Vendors</strong>
         <table>
@@ -45,25 +84,21 @@
                 </tr>
             </thead>
             <tbody>
-            @foreach($vendors as $vendor)
-                <tr>
-                    <td>{{ $vendor->vendor->nama ?? '-' }}</td>
-                    <td>{{ $vendor->vendor->deskripsi ?? '-' }}</td>
-                    <td>Rp {{ number_format($vendor->estimated_price, 0, ',', '.') }}</td>
-                </tr>
-            @endforeach
+                @foreach($vendors as $vendor)
+                    <tr>
+                        <td>{{ $vendor->vendor->nama ?? '-' }}</td>
+                        <td>{{ $vendor->vendor->deskripsi ?? '-' }}</td>
+                        <td>Rp {{ number_format($vendor->estimated_price, 0, ',', '.') }}</td>
+                    </tr>
+                @endforeach
             </tbody>
         </table>
     </div>
 
     <div class="section">
-        <strong>Total:</strong>
-        Rp {{
-            number_format(
-                ($venue->harga ?? 0) + $vendors->sum('estimated_price'),
-                0, ',', '.'
-            )
-        }}
+        <strong>Total (Venue + Vendors + Catering):</strong>
+        <strong>IDR {{ number_format($total, 0, ',', '.') }}</strong>
     </div>
 </body>
+
 </html>

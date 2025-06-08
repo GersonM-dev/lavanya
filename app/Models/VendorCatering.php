@@ -28,4 +28,9 @@ class VendorCatering extends Model
     {
         return $this->belongsTo(Venue::class);
     }
+
+    public function weddingTransactions()
+    {
+        return $this->hasMany(WeddingTransaction::class, 'vendor_catering_id');
+    }
 }
