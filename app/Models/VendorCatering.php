@@ -5,29 +5,27 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Venue extends Model
+class VendorCatering extends Model
 {
     use HasFactory;
-
     protected $fillable = [
         'nama',
+        'venue_id',
         'type',
         'deskripsi',
-        'harga',
         'portofolio_link',
         'image1',
         'image2',
         'image3',
         'is_active',
+        'buffet_price',
+        'gubugan_price',
+        'dessert_price',
+        'base_price',
     ];
 
-    public function vendors()
+    public function venue()
     {
-        return $this->hasMany(Vendor::class);
-    }
-
-    public function vendor_caterings()
-    {
-        return $this->hasMany(VendorCatering::class);
+        return $this->belongsTo(Venue::class);
     }
 }
