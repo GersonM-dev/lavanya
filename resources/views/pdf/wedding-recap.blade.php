@@ -56,19 +56,13 @@
         Name: {{ $venue->nama ?? '-' }}<br>
         Type: {{ $venue->type ?? '-' }}<br>
         Description: {{ $venue->deskripsi ?? '-' }}<br>
-        Price: Rp {{ isset($venue->harga) ? number_format($venue->harga, 0, ',', '.') : '-' }}<br>
     </div>
 
     @if($catering)
         <div class="section">
             <strong>Catering</strong><br>
             Name: {{ $catering->nama ?? '-' }}<br>
-            @if($catering->type === 'Hotel' || $catering->type === 'Resto')
-                Total Buffet: IDR {{ number_format($totalBuffet, 0, ',', '.') }}<br>
-                Total Gubugan: IDR {{ number_format($totalGubugan, 0, ',', '.') }}<br>
-                Total Dessert: IDR {{ number_format($totalDessert, 0, ',', '.') }}<br>
-            @endif
-            Total Catering: <strong>IDR {{ number_format($cateringTotal, 0, ',', '.') }}</strong><br>
+            Description: {{ $catering->deskripsi ?? '-' }}<br>
         </div>
     @endif
 
@@ -80,7 +74,6 @@
                 <tr>
                     <th>Name</th>
                     <th>Description</th>
-                    <th>Estimated Price</th>
                 </tr>
             </thead>
             <tbody>
@@ -88,7 +81,6 @@
                     <tr>
                         <td>{{ $vendor->vendor->nama ?? '-' }}</td>
                         <td>{{ $vendor->vendor->deskripsi ?? '-' }}</td>
-                        <td>Rp {{ number_format($vendor->estimated_price, 0, ',', '.') }}</td>
                     </tr>
                 @endforeach
             </tbody>
@@ -96,7 +88,7 @@
     </div>
 
     <div class="section">
-        <strong>Total (Venue + Vendors + Catering):</strong>
+        <strong>Total Budget:</strong>
         <strong>IDR {{ number_format($total, 0, ',', '.') }}</strong>
     </div>
 </body>
