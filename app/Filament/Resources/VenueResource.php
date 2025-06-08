@@ -6,6 +6,7 @@ use App\Filament\Resources\VenueResource\Pages;
 use App\Filament\Resources\VenueResource\RelationManagers;
 use App\Models\Venue;
 use Filament\Forms;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -18,7 +19,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ToggleColumn;
 
 class VenueResource extends Resource
 {
@@ -39,15 +40,25 @@ class VenueResource extends Resource
                     'Outdoor' => 'Outdoor',
                 ])
                 ->required(),
-            Textarea::make('deskripsi')->required(),
             TextInput::make('harga')->numeric()->required(),
             TextInput::make('portofolio_link')->label('Link Portofolio')->url()->nullable(),
-
-            FileUpload::make('image1')->image()->directory('venues')->nullable(),
-            FileUpload::make('image2')->image()->directory('venues')->nullable(),
-            FileUpload::make('image3')->image()->directory('venues')->nullable(),
-
-            Toggle::make('is_active')->label('Aktif')->default(true),
+            FileUpload::make('image1')
+                ->label('Gambar 1')
+                ->image()
+                ->directory('venues')
+                ->required()->columnSpanFull(),
+            FileUpload::make('image2')
+                ->label('Gambar 2')
+                ->image()
+                ->directory('venues')
+                ->required(),
+            FileUpload::make('image3')
+                ->label('Gambar 3')
+                ->image()
+                ->directory('venues')
+                ->required(),
+            RichEditor::make('deskripsi')->required()->columnSpanFull(),
+            Toggle::make('is_active')->label('Aktif')->default(true)->hidden(),
         ]);
     }
 
@@ -58,7 +69,7 @@ class VenueResource extends Resource
                 TextColumn::make('nama')->searchable()->sortable(),
                 TextColumn::make('type'),
                 TextColumn::make('harga')->money('IDR', true),
-                IconColumn::make('is_active')->boolean()->label('Aktif'),
+                ToggleColumn::make('is_active')->label('Aktif'),
             ])
             ->filters([
                 //

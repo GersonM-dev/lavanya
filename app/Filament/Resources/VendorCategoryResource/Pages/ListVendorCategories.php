@@ -13,7 +13,9 @@ class ListVendorCategories extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()->label('Add Category')
+                ->icon('heroicon-o-plus')
+                ->color('primary'),
         ];
     }
 }

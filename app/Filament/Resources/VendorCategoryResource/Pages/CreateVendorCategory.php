@@ -9,4 +9,5 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateVendorCategory extends CreateRecord
 {
     protected static string $resource = VendorCategoryResource::class;
+    public static ?string $title = 'Add Category';
 }

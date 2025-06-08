@@ -13,7 +13,9 @@ class ListVendorCaterings extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()->label('Add Vendor Catering')
+                ->icon('heroicon-o-plus')
+                ->color('primary'),
         ];
     }
 }

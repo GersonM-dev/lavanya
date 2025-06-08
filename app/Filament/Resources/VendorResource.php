@@ -6,6 +6,7 @@ use App\Filament\Resources\VendorResource\Pages;
 use App\Filament\Resources\VendorResource\RelationManagers;
 use App\Models\Vendor;
 use Filament\Forms;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -18,13 +19,13 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ToggleColumn;
 
 class VendorResource extends Resource
 {
     protected static ?string $model = Vendor::class;
 
-    protected static ?string $pluralLabel = 'Vendors';
+    protected static ?string $pluralLabel = 'Vendor';
     protected static ?string $navigationGroup = 'Venue & Vendor';
     public static function form(Form $form): Form
     {
@@ -34,19 +35,19 @@ class VendorResource extends Resource
                 ->label('Venue')
                 ->relationship('venue', 'nama')
                 ->searchable()
-                ->nullable(),
-            Textarea::make('deskripsi')->required(),
-            TextInput::make('harga')->numeric()->required(),
-            TextInput::make('portofolio_link')->label('Portfolio URL'),
-            FileUpload::make('image1')->image(),
-            FileUpload::make('image2')->image(),
-            FileUpload::make('image3')->image(),
-            Toggle::make('is_active')->default(true),
-            Toggle::make('is_mandatory')->default(false),
+                ->required(),
             Select::make('vendor_category_id')
-                ->label('Kategori Vendor')
+                ->label('Kategori')
                 ->relationship('category', 'name')
                 ->required(),
+            TextInput::make('harga')->numeric()->required(),
+            FileUpload::make('image1')->image()->label('Gambar 1')->columnSpanFull(),
+            FileUpload::make('image2')->image()->label('Gambar 2'),
+            FileUpload::make('image3')->image()->label('Gambar 3'),
+            RichEditor::make('deskripsi')->required()->columnSpanFull(),
+            TextInput::make('portofolio_link')->label('Portfolio URL')->columnSpanFull(),
+            Toggle::make('is_active')->default(true)->hidden(),
+            Toggle::make('is_mandatory')->default(false)->hidden(),
         ]);
     }
 
@@ -57,12 +58,10 @@ class VendorResource extends Resource
                 TextColumn::make('nama')->searchable(),
                 TextColumn::make('venue.nama')->label('Venue'),
                 TextColumn::make('category.name')->label('Kategori'),
-                IconColumn::make('is_active')
-                    ->label('Aktif')
-                    ->boolean(),
-                IconColumn::make('is_mandatory')
-                    ->label('Wajib')
-                    ->boolean(),
+                ToggleColumn::make('is_active')
+                    ->label('Aktif'),
+                ToggleColumn::make('is_mandatory')
+                    ->label('Wajib'),
                 TextColumn::make('harga')->money('IDR'),
             ])
             ->filters([

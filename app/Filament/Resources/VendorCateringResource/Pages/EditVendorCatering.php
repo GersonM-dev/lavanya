@@ -9,6 +9,7 @@ use Filament\Resources\Pages\EditRecord;
 class EditVendorCatering extends EditRecord
 {
     protected static string $resource = VendorCateringResource::class;
+    public static ?string $title = 'Edit Vendor Catering';
 
     protected function getHeaderActions(): array
     {

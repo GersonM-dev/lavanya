@@ -9,4 +9,5 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateVenue extends CreateRecord
 {
     protected static string $resource = VenueResource::class;
+    public static ?string $title = 'Add Venue';
 }

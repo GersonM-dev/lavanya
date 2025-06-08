@@ -35,7 +35,6 @@ class VendorCategoryResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')->sortable()->searchable(),
-                TextColumn::make('created_at')->dateTime('d-M-Y')->sortable(),
             ])
             ->filters([
                 //
@@ -44,9 +43,7 @@ class VendorCategoryResource extends Resource
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+
             ]);
     }
 
