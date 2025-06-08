@@ -2,16 +2,18 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\WeddingTransactionResource\Pages;
-use App\Filament\Resources\WeddingTransactionResource\RelationManagers;
-use App\Models\WeddingTransaction;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Filament\Resources\Resource;
+use App\Models\WeddingTransaction;
+use Filament\Tables\Actions\Action;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\WeddingTransactionResource\Pages;
+use App\Filament\Resources\WeddingTransactionResource\RelationManagers;
 
 class WeddingTransactionResource extends Resource
 {
@@ -49,7 +51,17 @@ class WeddingTransactionResource extends Resource
                     })
                     ->required()
                     ->searchable()
+                    ->reactive() // <-- ADD THIS
+                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                        // Recalculate total if venue changes
+                        $vendors = $get('vendors') ?? [];
+                        $venue = \App\Models\Venue::find($state);
+                        $venuePrice = $venue?->harga ?? 0;
+                        $vendorTotal = collect($vendors)->sum('estimated_price');
+                        $set('total_estimated_price', $venuePrice + $vendorTotal);
+                    })
                     ->disabled(fn($get) => !$get('venue_type')),
+
 
                 Forms\Components\Repeater::make('vendors')
                     ->label('Vendors')
@@ -75,7 +87,10 @@ class WeddingTransactionResource extends Resource
                                 }
 
                                 $vendors = $get('../../vendors') ?? [];
-                                $total = collect($vendors)->sum('estimated_price');
+                                $venueId = $get('../../venue_id');
+                                $venue = \App\Models\Venue::find($venueId);
+                                $venuePrice = $venue?->harga ?? 0;
+                                $total = collect($vendors)->sum('estimated_price') + $venuePrice;
                                 $set('../../total_estimated_price', $total);
                             }),
 
@@ -86,7 +101,10 @@ class WeddingTransactionResource extends Resource
                             ->reactive()
                             ->afterStateUpdated(function ($state, callable $set, callable $get) {
                                 $vendors = $get('../../vendors') ?? [];
-                                $total = collect($vendors)->sum('estimated_price');
+                                $venueId = $get('../../venue_id');
+                                $venue = \App\Models\Venue::find($venueId);
+                                $venuePrice = $venue?->harga ?? 0;
+                                $total = collect($vendors)->sum('estimated_price') + $venuePrice;
                                 $set('../../total_estimated_price', $total);
                             }),
                     ])
@@ -146,7 +164,7 @@ class WeddingTransactionResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('total_estimated_price')
-                    ->label('Total Estimated Price')
+                    ->label('Estimated Price')
                     ->money('idr')
                     ->sortable(),
 
@@ -166,13 +184,38 @@ class WeddingTransactionResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Action::make('download_recap')
+                    ->label('Rekap')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->action(function ($record) {
+                        return \App\Filament\Resources\WeddingTransactionResource::downloadRecapPdf($record);
+                    })
+                    ->color('primary'),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+
             ]);
     }
+
+    public static function downloadRecapPdf($record)
+    {
+        $customer = $record->customer;
+        $venue = $record->venue; // Relationship
+        $vendors = $record->vendors; // Collection
+        $total = ($venue->harga ?? 0) + $vendors->sum('estimated_price');
+
+        $pdf = Pdf::loadView('pdf.wedding-recap', [
+            'customer' => $customer,
+            'venue' => $venue,
+            'vendors' => $vendors,
+            'total' => $total,
+        ]);
+
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->stream();
+        }, 'wedding_plan_recap_' . $record->id . '.pdf');
+    }
+
 
     public static function getRelations(): array
     {
@@ -189,4 +232,5 @@ class WeddingTransactionResource extends Resource
             'edit' => Pages\EditWeddingTransaction::route('/{record}/edit'),
         ];
     }
+
 }
