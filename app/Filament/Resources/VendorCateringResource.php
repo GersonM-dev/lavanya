@@ -3,9 +3,10 @@
 namespace App\Filament\Resources;
 
 use Filament\Forms;
+use Filament\Forms\Components\RichEditor;
 use Filament\Tables;
-use App\Models\Venue;
 use Filament\Forms\Form;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use App\Models\VendorCatering;
 use Filament\Resources\Resource;
@@ -16,8 +17,6 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\RichEditor;
-use Filament\Tables\Columns\ToggleColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\VendorCateringResource\Pages;
@@ -36,11 +35,11 @@ class VendorCateringResource extends Resource
             TextInput::make('nama')->required(),
             Select::make('venue_id')
                 ->label('Venue')
-                ->options(function () {
-                    return ['all' => 'All Venues'] + Venue::pluck('nama', 'id')->toArray();
-                })
+                ->relationship('venue', 'nama')
                 ->searchable()
-                ->nullable(),
+                ->preload()
+                ->multiple(),
+
             Select::make('type')
                 ->options([
                     'Hotel' => 'Hotel',

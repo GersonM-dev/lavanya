@@ -33,4 +33,8 @@ class VendorCatering extends Model
     {
         return $this->hasMany(WeddingTransaction::class, 'vendor_catering_id');
     }
+
+    protected $casts = [
+        'venue_id' => 'array',
+    ];
 }
