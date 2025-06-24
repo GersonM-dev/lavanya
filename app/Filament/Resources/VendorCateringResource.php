@@ -89,7 +89,7 @@ class VendorCateringResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('nama')->searchable(),
-                TextColumn::make('venue.nama')->label('Venue'),
+                TextColumn::make('venues')->label('Venues')->formatStateUsing(fn($state) => collect(explode(',', $state))->map(fn($v) => trim($v))->implode(', ')),
                 TextColumn::make('type')->label('Tipe'),
                 TextColumn::make('harga')->money('IDR', true),
                 ToggleColumn::make('is_active'),
@@ -122,4 +122,16 @@ class VendorCateringResource extends Resource
             'edit' => Pages\EditVendorCatering::route('/{record}/edit'),
         ];
     }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return VendorCatering::query()
+            ->selectRaw('
+                vendor_caterings.*,
+                GROUP_CONCAT(DISTINCT venues.nama SEPARATOR ", ") as venues
+            ')
+            ->join('venues', 'vendor_caterings.venue_id', '=', 'venues.id')
+            ->groupBy('vendor_caterings.id');
+    }
+
 }
