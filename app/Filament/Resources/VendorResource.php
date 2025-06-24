@@ -34,7 +34,8 @@ class VendorResource extends Resource
             Select::make('venue_id')
                 ->label('Venue')
                 ->relationship('venue', 'nama')
-                ->searchable()
+                ->preload()
+                ->multiple()
                 ->required(),
             Select::make('vendor_category_id')
                 ->label('Kategori')
