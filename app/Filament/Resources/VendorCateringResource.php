@@ -118,8 +118,8 @@ class VendorCateringResource extends Resource
     {
         return [
             'index' => Pages\ListVendorCaterings::route('/'),
-            'create' => Pages\CreateVendorCatering::route('/create'),
-            'edit' => Pages\EditVendorCatering::route('/{record}/edit'),
+            // 'create' => Pages\CreateVendorCatering::route('/create'),
+            // 'edit' => Pages\EditVendorCatering::route('/{record}/edit'),
         ];
     }
 
