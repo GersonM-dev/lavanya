@@ -127,6 +127,7 @@ class VendorCateringResource extends Resource
     {
         return VendorCatering::query()
             ->selectRaw('
+                MIN(vendor_caterings.id) as id,
                 vendor_caterings.nama,
                 vendor_caterings.type,
                 GROUP_CONCAT(DISTINCT venues.nama SEPARATOR ", ") as venues,
@@ -135,6 +136,7 @@ class VendorCateringResource extends Resource
             ->join('venues', 'vendor_caterings.venue_id', '=', 'venues.id')
             ->groupBy('vendor_caterings.nama', 'vendor_caterings.type');
     }
+
 
 
 }
