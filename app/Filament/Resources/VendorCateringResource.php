@@ -33,12 +33,12 @@ class VendorCateringResource extends Resource
     {
         return $form->schema([
             TextInput::make('nama')->required(),
+
             Select::make('venue_id')
-                ->label('Venue')
-                ->relationship('venue', 'nama')
-                ->searchable()
-                ->preload()
-                ->multiple(),
+                ->label('Venues')
+                ->options(\App\Models\Venue::pluck('nama', 'id')->toArray())
+                ->multiple()
+                ->required(),
 
             Select::make('type')
                 ->options([
@@ -120,5 +120,26 @@ class VendorCateringResource extends Resource
             'create' => Pages\CreateVendorCatering::route('/create'),
             'edit' => Pages\EditVendorCatering::route('/{record}/edit'),
         ];
+    }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        // Remove venue_id from here so it doesn’t try to create once with an array
+        unset($data['venue_id']);
+        return $data;
+    }
+
+    protected function handleRecordCreation(array $data): VendorCatering
+    {
+        $venueIds = $this->form->getState()['venue_id'];
+
+        foreach ($venueIds as $venueId) {
+            VendorCatering::create(array_merge($data, [
+                'venue_id' => $venueId,
+            ]));
+        }
+
+        // Just return one of them to satisfy the base class
+        return VendorCatering::latest()->first();
     }
 }
