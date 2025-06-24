@@ -32,11 +32,11 @@ class VendorResource extends Resource
         return $form->schema([
             TextInput::make('nama')->required(),
             Select::make('venue_id')
-                ->label('Venue')
-                ->relationship('venue', 'nama')
-                ->preload()
+                ->label('Venues')
+                ->options(\App\Models\Venue::pluck('nama', 'id')->toArray())
                 ->multiple()
                 ->required(),
+
             Select::make('vendor_category_id')
                 ->label('Kategori')
                 ->relationship('category', 'name')
